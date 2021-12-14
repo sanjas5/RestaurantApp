@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/liste.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="icon" href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png">
+
+</head>
+<body>
+  <%-include partials/admin_nav.ejs%>
+<div id="main">
+<%narudzbe.forEach(h=> {%>
+<h1> <%=JSON.stringify(h)%> </h1>
+<hr>
+<%})%>
+
+
+</div>
+</body>
+</html>

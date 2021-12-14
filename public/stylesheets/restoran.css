@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prata&display=swap');
+* {
+    font-family: 'Prata', serif;
+}
+body {
+    padding: 10px;
+}
+Iframe {
+    width: 100%;
+    height: 50vh;
+}
+
+#naslov {
+    font-family: 'Fredericka the Great', cursive;
+    color: rgb(136,83,9);
+}
+
+button {
+    background-image: linear-gradient(to bottom right, rgba(174, 89, 53, 0.8), rgb(136, 83, 9));
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    border: none;
+    border-radius: 50px;
+    color: white;
+    padding: 10px;
+    height: 50px;
+    width: auto;
+}
+

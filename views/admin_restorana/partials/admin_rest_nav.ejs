@@ -1,0 +1,39 @@
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+  crossorigin="anonymous"
+/>
+<link rel="stylesheet" href="/stylesheets/nav_style.css" />
+<link
+  rel="icon"
+  href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+/>
+<style>
+  .panel-admin-rest {
+    margin-top: 10px;
+    height: 85px;
+  }
+</style>
+
+<div class="admin-panel-container panel-admin-rest">
+  <img
+    src="/images/restoran.png"
+    alt="logo"
+    style="padding: 0; margin: 0"
+    onclick="location.href='/'"
+  />
+  <a class="nav-item" href="/adm_rest/<%=nazivRestorana%>/artikli">Artikli</a>
+  <a class="nav-item" href="/adm_rest/<%=nazivRestorana%>/grupni_meni"
+    >Grupni Meni</a
+  >
+  <a class="nav-item" href="/adm_rest/<%=nazivRestorana%>/dostavljaci"
+    >Dostavljači</a
+  >
+  <a class="nav-item" href="/adm_rest/<%=nazivRestorana%>/narudzbe">Narudžbe</a>
+  <a class="nav-item" href="/adm_rest/<%=nazivRestorana%>/restoran_about"
+    >O Restoranu</a
+  >
+  <a class="nav-item" href="/users/logout">Odjava</a>
+  <h4 class="welcome-message">Dobrodošao/la, <%=name%></h4>
+</div>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register</title>
+    <link rel="stylesheet" href="/stylesheets/form_style.css" />
+    <link
+      rel="icon"
+      href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+    />
+
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.10.2.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://maps.google.com/maps/api/js?key=AIzaSyAPjL2ShXIKKUP1_pUZVEy0GvbH73f6flg&sensor=false&libraries=places"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      #map {
+        width: 100%;
+        height: 480px;
+      }
+      .location-container {
+        display: flex;
+        padding: 1rem;
+        align-items: center;
+        justify-content: space-around;
+      }
+      .location-container > span {
+        padding: 0.5rem;
+      }
+      .btn:hover {
+        background-color: darksalmon;
+        transition: 0.5s all ease;
+        cursor: pointer;
+      }
+      .form-group-location {
+        width: 100%;
+      }
+      .container {
+        width: 100%;
+      }
+      .title {
+        text-align: center;
+        border-bottom: 4px solid lightcoral;
+        padding-bottom: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <form id="register-form">
+        <div>
+          <h1 class="title">Registracija Kupca</h1>
+          <div class="form-group">
+            <label for="firstname">Ime:</label><br />
+            <input
+              required
+              type="text"
+              class="form-control input"
+              id="ime"
+              name="firstname"
+            /><br />
+          </div>
+          <div class="form-group">
+            <label for="surname">Prezime:</label><br />
+            <input
+              required
+              type="text"
+              class="form-control input"
+              id="prezime"
+              name="surname"
+            /><br />
+          </div>
+          <div class="form-group">
+            <label for="email">Email address:</label><br />
+            <input
+              required
+              type="email"
+              class="form-control input"
+              id="email"
+              name="email"
+            /><br />
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label for="pwd">Password:</label><br />
+            <input
+              required
+              type="password"
+              class="form-control input"
+              id="pwd"
+              name="pwd"
+            /><br />
+          </div>
+          <div class="form-group">
+            <label for="phone">Telefon:</label><br />
+            <input
+              required
+              type="tel"
+              class="form-control input"
+              id="phone"
+              name="phone"
+            /><br />
+          </div>
+          <div class="container">
+            <div class="form-group-location">
+              <label for="grad">Adresa prebivališta:</label>
+              <br />
+              <div class="location-container">
+                <span>Lokacija:</span>
+                <input
+                  required
+                  type="text"
+                  class="location form-control input"
+                  id="location"
+                  required
+                />
+                <span> Lat: </span>
+
+                <input
+                  required
+                  type="text"
+                  class="location form-control input"
+                  id="lat"
+                />
+                <span> Long: </span>
+
+                <input
+                  required
+                  type="text"
+                  class="location form-control input"
+                  id="lng"
+                />
+              </div>
+              <div id="locationPicker" style="width: 100%; height: 400px"></div>
+            </div>
+          </div>
+          <br /><br />
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+      </form>
+      <a href="/users/login">Imate već račun? Prijavite se!</a>
+    </div>
+    <script>
+      let adresa;
+      $(function () {
+        $('#locationPicker').locationpicker({
+          location: { latitude: 43.8562586, longitude: 18.4130763 },
+          radius: 0,
+          inputBinding: {
+            latitudeInput: $('#lat'),
+            longitudeInput: $('#lng'),
+            locationNameInput: $('#location'),
+          },
+          oninitialized: function (component) {
+            $('#location').val('');
+            $('#lat').val('');
+            $('#lng').val('');
+          },
+          enableAutocomplete: true,
+          onchanged: function (currentLocation, radius, isMarkerDropped) {
+            adresa = $(this).locationpicker('map').location;
+          },
+        });
+      });
+      $('#map').locationpicker();
+      $('#register-form').submit(function (event) {
+        event.preventDefault();
+        const data = $('#register-form').serializeArray();
+        data.push({ name: 'adresa', value: JSON.stringify(adresa) });
+
+        $.ajax({
+          url: '/users/register',
+          type: 'post',
+          dataType: 'json',
+          data,
+          success: function (data) {
+            Swal.fire({
+              title: 'Uspješno registrovani!',
+              icon: 'success',
+            });
+
+            setTimeout(() => (location.href = '/users/login'), 2000);
+          },
+          error: function (data) {
+            Swal.fire({
+              title: 'Došlo je do greške!',
+              icon: 'error',
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

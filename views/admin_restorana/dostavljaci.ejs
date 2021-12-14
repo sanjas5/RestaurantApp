@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dostavljaci</title>
+    <link rel="stylesheet" href="/stylesheets/liste.css" />
+    <link
+      rel="icon"
+      href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+    />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.10.2.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://maps.google.com/maps/api/js?key=AIzaSyAPjL2ShXIKKUP1_pUZVEy0GvbH73f6flg&sensor=false&libraries=places"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      #map {
+        width: 100%;
+        height: 480px;
+      }
+      .location-container {
+        display: flex;
+        padding: 1rem;
+        align-items: center;
+        justify-content: space-around;
+      }
+      .location-container > span {
+        padding: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <%-include partials/admin_rest_nav.ejs%>
+    <div id="main">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Email</th>
+            <th>Telefon</th>
+            <th>Adresa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%dostavljaci.forEach(a=> {%>
+          <tr>
+            <td><%=a.ime%></td>
+            <td><%=a.prezime%></td>
+            <td><%=a.email%></td>
+            <td><%=a.telefon%></td>
+            <td><%=a.ulica ? a.ulica : 'Nije dostupno'%></td>
+          </tr>
+          <%}) %>
+        </tbody>
+      </table>
+      <hr />
+      <div class="container" style="background: #f7f7f7">
+        <form id="forma-dostavljaci">
+          <br />
+          <h4>Dodaj dostavljača</h4>
+          <br />
+          <div class="form-group">
+            <label for="ime">Ime:</label>
+            <input
+              type="text"
+              class="form-control input"
+              id="user"
+              name="firstname"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="cijena">Prezime:</label>
+            <input
+              type="text"
+              class="form-control input"
+              id="user"
+              name="surname"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="grad">Email:</label>
+            <input
+              type="text"
+              class="form-control input"
+              id="user"
+              name="email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="grad">Password:</label>
+            <input
+              type="password"
+              class="form-control input"
+              id="user"
+              name="pwd"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="grad">Telefon:</label>
+            <input
+              type="number"
+              class="form-control input"
+              id="user"
+              name="telefon"
+            />
+          </div>
+          <div class="form-group">
+            <label for="grad">Adresa:</label>
+            <br />
+            <hr />
+            <small>Pomjeri marker za tačniju lokaciju</small>
+            <div class="location-container">
+              <span>Lokacija:</span>
+
+              <input
+                type="text"
+                class="location form-control input"
+                id="location"
+                required
+              />
+              <span> Lat: </span>
+
+              <input type="text" class="location form-control input" id="lat" />
+              <span> Long: </span>
+
+              <input type="text" class="location form-control input" id="lng" />
+            </div>
+            <div id="locationPicker" style="width: 100%; height: 400px"></div>
+          </div>
+          <input type="hidden" name="restoranId" value="<%=restoranId%>" />
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        <br />
+      </div>
+    </div>
+    <script>
+      let adresa;
+      $(function () {
+        $('#locationPicker').locationpicker({
+          location: { latitude: 43.8562586, longitude: 18.4130763 },
+          radius: 0,
+          inputBinding: {
+            latitudeInput: $('#lat'),
+            longitudeInput: $('#lng'),
+            locationNameInput: $('#location'),
+          },
+          oninitialized: function (component) {
+            $('#location').val('');
+            $('#lat').val('');
+            $('#lng').val('');
+          },
+          enableAutocomplete: true,
+          onchanged: function (currentLocation, radius, isMarkerDropped) {
+            adresa = $(this).locationpicker('map').location;
+          },
+        });
+      });
+      $('#map').locationpicker();
+      $('#forma-dostavljaci').submit(function (event) {
+        event.preventDefault();
+        const data = $('#forma-dostavljaci').serializeArray();
+        data.push({ name: 'adresa', value: JSON.stringify(adresa) });
+
+        $.ajax({
+          url: '/adm_rest/<%=nazivRestorana%>/dostavljac',
+          type: 'post',
+          dataType: 'json',
+          data,
+          success: function (data) {
+            Swal.fire({
+              title: 'Dostavljač dodan!',
+              text: 'Osvježite stranicu da dobijete nove podatke.',
+              icon: 'success',
+            });
+          },
+          error: function (data) {
+            console.log(data);
+            Swal.fire({
+              title: 'Došlo je do greške!',
+              icon: 'error',
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

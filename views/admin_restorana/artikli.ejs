@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Artikli</title>
+    <link rel="stylesheet" href="/stylesheets/liste.css" />
+    <link
+      rel="icon"
+      href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+    />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.10.2.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <%-include partials/admin_rest_nav.ejs%>
+    <div id="main">
+      <h2 class="article-title">Trenutni artikli restorana</h2>
+      <div class="container">
+        <div class="row">
+          <%artikli.forEach(a=> {%>
+          <div class="col">
+            <div class="m-2 card" style="width: 18rem">
+              <img class="card-img-top" src="<%=a.slika%>" alt="<%=a.ime%>" />
+              <div class="card-body">
+                <h5 class="card-title article-title"><%=a.ime%></h5>
+                <p class="card-text"><b>Cijena:</b> <%=a.cijena%></p>
+                <p class="card-text"><b>Količina:</b> <%=a.kolicina%></p>
+                <p class="card-text">
+                  <b>Tip artikla:</b> <%=a.tip || 'Nije dodano'%>
+                </p>
+              </div>
+            </div>
+          </div>
+          <%}) %>
+        </div>
+      </div>
+      <form id="forma-artikli">
+        <h3 class="article-title">Dodaj novi artikal</h3>
+        <div class="form-group">
+          <label for="ime">Ime artikla:</label><br />
+          <input
+            type="text"
+            class="form-control input"
+            id="user"
+            name="ime"
+            required
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="cijena">Cijena (u KM) :</label><br />
+          <input
+            type="text"
+            class="form-control input"
+            id="user"
+            name="cijena"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="slika">Slika (Link):</label><br />
+          <input
+            type="url"
+            class="form-control input"
+            id="user"
+            name="slika"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="kolicina">Količina (u gramima):</label><br />
+          <input
+            type="number"
+            class="form-control input"
+            id="user"
+            name="kolicina"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="tip">Tip artikla:</label><br />
+          <select name="tip" class="form-select form-control">
+            <%tipovi.forEach(tip => {%>
+            <option value="<%=tip.id%>"><%=tip.tip.trim()%></option>
+            <%})%>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+    </div>
+    <script>
+      $('#forma-artikli').submit(function (event) {
+        event.preventDefault();
+        const data = $('#forma-artikli').serializeArray();
+
+        $.ajax({
+          url: '/adm_rest/<%=nazivRestorana%>/artikal',
+          type: 'post',
+          dataType: 'json',
+          data,
+          success: function (data) {
+            Swal.fire({
+              title: 'Artikal dodan!',
+              text: 'Osvježite stranicu da dobijete nove podatke.',
+              icon: 'success',
+            });
+          },
+          error: function (data) {
+            console.log(data);
+            Swal.fire({
+              title: 'Došlo je do greške!',
+              icon: 'error',
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

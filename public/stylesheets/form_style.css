@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prata&display=swap');
+* {
+  padding: 10px;
+  outline: none;
+}
+
+body {
+  background: url('../images/login_background.jpg');
+  background-size: cover;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+#main {
+  width: 60vw;
+  margin-left: 20vw;
+  text-align: center;
+  background-color: white;
+  padding: 15px;
+}
+
+label {
+  color: rgb(62, 64, 59);
+  font-weight: 500;
+  font-size: 20px;
+}
+
+input {
+  background-color: transparent;
+  color: rgb(93, 94, 92);
+  font-weight: 300;
+  font-size: 18px;
+  border: none;
+  border-bottom: 1px solid rgb(62, 64, 59);
+}
+
+button {
+  /* background-image: linear-gradient(to bottom right, rgb(248, 169, 64), rgb(136, 83, 9)); */
+  background-color: rgba(174, 89, 53, 0.8);
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  padding: 10px;
+  height: 50px;
+  min-width: 400px;
+  margin: auto;
+}
+#btn {
+  margin-top: 150px;
+}
+
+.form-error-handler {
+  color: rgb(163, 58, 32);
+}
+
+form {
+  margin: 50px;
+}
+a {
+  color: rgb(136, 83, 9);
+}

@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>Novi Admin restorana</title>
+    <link rel='stylesheet' href='/stylesheets/form_style.css' />
+    <link>
+    <link rel="icon" href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png">
+
+</head>
+<body>
+<div id="main">
+<form action="/adm/adm_restorana" method="post" id="adm_rest" style="flex-direction: column">
+     <div class="form-group">
+            <label for="ime">Name:</label><br>
+            <input type="text" class="form-control input" id="ime" name="ime"><br>
+        </div>
+        <div class="form-group">
+            <label for="prezime">Surname:</label><br>
+            <input type="text" class="form-control input" id="prezime" name="prezime"><br>
+        </div>
+        <div class="form-group">
+            <label for="email">Email address:</label><br>
+            <input type="email" class="form-control input" id="email" name="email"><br>
+        </div>
+        <div class="form-group">
+            <label for="pwd">Password:</label><br>
+            <input type="password" class="form-control input" id="pwd" name="pwd"><br>
+        </div>
+        <div class="form-group">
+            <label for="telefon">Telefon:</label><br>
+            <input type="tel" class="form-control input" id="phone" name="telefon"><br>
+        </div>
+    <input type="hidden" name="id" value="<%=id%>">
+    <button type="submit" class="btn btn-default">Submit!</button>
+</form>
+</div>
+</body>
+</html>

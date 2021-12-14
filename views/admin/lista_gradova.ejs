@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/liste.css' />
+    <link rel="icon" href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png">
+
+</head>
+<body>
+ <%-include partials/admin_nav.ejs%>
+<div id="main">
+<%lista_gradova.forEach(g=> {%>
+<h1> <%=g.ime%> </h1>
+<hr>
+<%})
+%>
+
+<form action="/adm/grad" method="post">
+
+    <div class="form-group">
+        <label for="grad">Grad:</label><br>
+        <input type="text" class="form-control input" id="user" name="grad"><br>
+    </div>
+
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+</div>
+</body>
+</html>

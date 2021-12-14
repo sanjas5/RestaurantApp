@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dostavljaci</title>
+    <link rel="stylesheet" href="/stylesheets/liste.css" />
+    <link
+      rel="icon"
+      href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script
+      type="text/javascript"
+      src="https://maps.google.com/maps/api/js?key=AIzaSyAPjL2ShXIKKUP1_pUZVEy0GvbH73f6flg&sensor=false&libraries=places"
+    ></script>
+  </head>
+  <style>
+    button {
+      color: #fff !important;
+      border: none;
+    }
+    .btn-circle.btn-md {
+      width: 50px;
+      height: 50px;
+      padding: 7px 10px;
+      border-radius: 25px;
+      font-size: 10px;
+      text-align: center;
+    }
+    .btn-md:hover {
+      background-color: lightsalmon;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      padding: 7px 10px;
+      border-radius: 25px;
+      font-size: 20px;
+      text-align: center;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delivered {
+      color: white;
+      background-color: green;
+    }
+    .not-delivered {
+      color: white;
+      background-color: darkred;
+    }
+    #table-container {
+      height: 500px;
+      overflow-y: auto;
+    }
+  </style>
+  <body onload="loadMap()">
+    <%-include partials/admin_rest_nav.ejs%>
+    <div id="main">
+      <div id="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Isporučeno?</th>
+              <th>Ime Kupca</th>
+              <th>Cijena</th>
+              <th>Vrijeme</th>
+              <th>Dostavljač</th>
+              <th>Dodijeli?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%narudzbe.forEach((a, i) => {%>
+            <tr>
+              <td>
+                <% if (a.jeliisporuceno) { %>
+                <div class="avatar delivered">Da</div>
+                <% } else{ %>
+                <div class="avatar not-delivered">Ne</div>
+                <% } %>
+              </td>
+              <td><%=a.imeKupac%></td>
+              <td><%=a.cijena%> KM</td>
+              <% const d = new Date(a.datum); const date = d.getDate() + "-" +
+              (d.getMonth()+1) + "-" + d.getFullYear(); %>
+              <td><%=date + " " + a.vrijeme.split('.')[0]%></td>
+              <td><%=a.imeDostavljac || 'Nije dodijeljen'%></td>
+              <td>
+                <div
+                  class="
+                    dostavljac-dodaj
+                    form-group
+                    d-flex
+                    p-2
+                    justify-content-between
+                    align-items-center
+                  "
+                >
+                  <select
+                    class="form-control form-select mx-2"
+                    id="dostavljac-<%=i%>"
+                  >
+                    <%dostavljaci.forEach(d => {%>
+                    <option value="<%=d.id%>"><%=d.ime%></option>
+                    <%})%>
+                  </select>
+
+                  <button
+                    type="button"
+                    class="btn btn-default btn-circle btn-md"
+                    onclick="addDelivery(`<%= a.id %>`, `<%=i%>`)"
+                  >
+                    Dodaj
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <%}) %>
+          </tbody>
+        </table>
+      </div>
+      <hr />
+      <div id="sample" style="width: 100%; height: 700px"></div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const lokacije = JSON.parse((test = '<%- JSON.stringify(narudzbe) %>'));
+
+      function addDelivery(id, index) {
+        const dostavljacVal = $(`#dostavljac-${index}`).val();
+        $.ajax({
+          url: `/adm_rest/${'<%=nazivRestorana%>'}/dostavljac/${dostavljacVal}`,
+          type: 'POST',
+          dataType: 'json',
+          data: { narudzba: id },
+          cache: false,
+          error: function () {
+            Swal.fire({
+              title: 'Dostavljač je već dodan!',
+              icon: 'error',
+            });
+          },
+        }).done(function (response) {
+          Swal.fire({
+            title: 'Dostavljač je dodan!',
+            icon: 'success',
+          });
+          setTimeout(() => location.reload(), 2000);
+        });
+      }
+
+      function loadMap() {
+        var mapOptions = {
+          center: new google.maps.LatLng(43.8562586, 18.4130763),
+          zoom: 15,
+        };
+
+        var map = new google.maps.Map(
+          document.getElementById('sample'),
+          mapOptions
+        );
+        const infoWindow = new google.maps.InfoWindow();
+
+        lokacije.map(
+          ({
+            latituda,
+            longituda,
+            imeKupac,
+            vrijeme,
+            id,
+            cijena,
+            jeliisporuceno,
+            imeDostavljac,
+          }) => {
+            const marker = new google.maps.Marker({
+              position: new google.maps.LatLng(latituda, longituda),
+              map: map,
+              animation: google.maps.Animation.Drop,
+              icon: '/images/delivery.png',
+              title: imeKupac,
+              label: vrijeme.split('.')[0],
+              optimized: false,
+            });
+
+            var infoWindowNode = document.createElement('div'); // main containing node for InfoWindow
+            var node = document.createElement('div'); // for chart
+            node.innerHTML = `
+            <br/>
+          <p><b>Id:</b> ${id}</p>
+          <p><b>Cijena:</b> ${cijena} KM</p>
+          <p><b>Isporučeno:</b> ${jeliisporuceno ? 'Da' : 'Ne'}</p>
+          <p><b>Dostavljač:</b> ${imeDostavljac || 'Nije preuzeto'}</p>
+          `;
+            var textNode = document.createElement('div'); // for "string content"
+            textNode.innerHTML = marker.getTitle();
+            infoWindowNode.appendChild(textNode); // append "string content"
+            infoWindowNode.appendChild(node); // append chart
+
+            marker.addListener('click', () => {
+              infoWindow.close();
+              infoWindow.setContent(infoWindowNode);
+              infoWindow.open(marker.getMap(), marker);
+            });
+          }
+        );
+        return marker;
+      }
+    </script>
+  </body>
+</html>

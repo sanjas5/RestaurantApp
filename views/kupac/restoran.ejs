@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Restoran <%=nazivRestorana%></title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+      crossorigin="anonymous"
+    />
+
+    <link rel="stylesheet" href="/stylesheets/liste.css" />
+    <link
+      rel="icon"
+      href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+    />
+
+    <style>
+      /* https://www.w3schools.com/css/tryit.asp?filename=trycss_grid */
+      .grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        background-color: #94bddf;
+        padding: 10px;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .grid-item {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        font-size: 30px;
+        text-align: center;
+        margin: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      button {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+      }
+      .add-item:hover {
+        background-color: darksalmon;
+        color: white;
+        transition: 0.5s ease all;
+      }
+      input[type='search'] {
+        margin: 1rem;
+      }
+      .card-text {
+        font-size: 0.7em;
+      }
+      .card {
+        min-width: 20vw;
+      }
+    </style>
+  </head>
+  <body>
+    <%-include partials/kupac_nav.ejs%>
+    <div
+      id="alert"
+      class="alert alert-success alert-dismissible fade"
+      role="alert"
+      style="position: fixed; top: 0; width: 300px"
+    >
+      <h4 class="alert-heading">Dodano!</h4>
+      <p>Vaš artikal je dodan.</p>
+      <p id="artiIme"></p>
+      <p id="artiKolicina"></p>
+    </div>
+
+    <div class="container">
+      <div class="jumbotron jumbotron-fluid bg-light">
+        <div class="container">
+          <button class="btn btn-lg btn-link float-right" onclick="goBack()">
+            🔙
+          </button>
+          <h1 class="display-4">
+            Restoran <strong><%=restoran[0].naziv%></strong>
+          </h1>
+          <p class="lead">Broj radnika: <%=restoran[0].broj_radnika%></p>
+          <p class="lead">Zvjezdica: <%=restoran[0].broj_zvjezdica%></p>
+          <p class="lead">
+            Kapacitet: <%=restoran[0].kapacitet || 'Nije postavljen'%>
+          </p>
+          <p class="lead">
+            Radno Vrijeme: Od <%=restoran[0].radno_vrijeme_od%>, Do
+            <%=restoran[0].radno_vrijeme_do%>
+          </p>
+          <p class="lead">Telefon: <%=restoran[0].telefon%></p>
+          <p class="lead">
+            Aktivan: <%=restoran[0].jeliaktivan ? 'Da' : 'Ne'%>
+          </p>
+        </div>
+      </div>
+      <div class="container bg-light p-4">
+        <h3>Trenutni Artikli:</h3>
+        <br />
+        <div class="input-group rounded">
+          <input
+            id="search-naziv"
+            type="search"
+            class="form-control rounded"
+            placeholder="Pretraga po nazivu artikla"
+            aria-label="Search"
+            aria-describedby="search-addon"
+          />
+          <input
+            id="search-tip"
+            type="search"
+            class="form-control rounded"
+            placeholder="Pretraga po tipu artikla"
+            aria-label="Search"
+            aria-describedby="search-addon"
+          />
+        </div>
+        <hr />
+        <div class="grid-container">
+          <div class="row" id="article-grid">
+            <%if (artikli.length > 0) {artikli.forEach(a => {%>
+            <div class="col-md">
+              <div class="grid-item">
+                <div class="card" style="max-width: 20rem">
+                  <img
+                    class="card-img-top"
+                    src="<%=a.slika%>"
+                    alt="<%=a.ime%>"
+                    style="height: 200px"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title"><%=a.ime%></h5>
+                    <p class="card-text">Cijena: <%=a.cijena%></p>
+                    <p class="card-text">Kolicina: <%=a.kolicina%></p>
+                    <p class="card-text">
+                      Tip: <%=a.tipArtikla || 'Nije određen'%>
+                    </p>
+                  </div>
+                  <div
+                    class="card-footer add-item"
+                    style="cursor: pointer"
+                    onclick='dodajArtikal("<%=a.id%>", "<%=a.ime%>", "<%=a.cijena%>", "<%=restoran[0].id%>")'
+                  >
+                    Dodaj
+                  </div>
+                </div>
+              </div>
+            </div>
+            <%})} else { %>
+            <p style="text-align: center; width: 100%; margin: auto">
+              Restoran trenutno nema artikala za kupovinu
+            </p>
+            <%}%>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      Storage.prototype.setObj = function (key, value) {
+        this.setItem(key, JSON.stringify(value));
+      };
+
+      Storage.prototype.getObj = function (key) {
+        var value = this.getItem(key);
+        return value && JSON.parse(value);
+      };
+
+      function goBack() {
+        window.history.back();
+      }
+
+      function dodajArtikal(id, name, price, restoranId) {
+        let exists = false;
+        let prodCount = 1;
+        let products;
+        $('.alert').addClass('show');
+
+        if (localStorage.getObj('artikalProjekat') !== null) {
+          products = localStorage.getObj('artikalProjekat');
+          products.map((obj) => {
+            if (obj.id === id) {
+              exists = true;
+              prodCount = obj.count++;
+            }
+          });
+
+          if (!exists) products.push({ id, name, price, count: 1, restoranId });
+          localStorage.setObj('artikalProjekat', products);
+        } else {
+          //productArray.push(productJSON);
+          localStorage.setObj('artikalProjekat', [
+            { id, name, price, count: 1, restoranId },
+          ]);
+        }
+        $('#artiIme').text(`Artikal : ${name}`);
+        $('#artiKolicina').text(`Kolicina : ${prodCount}`);
+        setTimeout(() => $('.alert').removeClass('show'), 1000);
+      }
+
+      let artikliNiz = '<%- JSON.stringify(artikli) %>';
+      const restoran = '<%=restoran[0].id%>';
+      const articleGrid = $('#article-grid');
+      const searchNaziv = $('#search-naziv');
+      const searchTip = $('#search-tip');
+
+      searchNaziv.keyup(() => {
+        const nameValue = searchNaziv.val();
+        const typeValue = searchTip.val();
+        const filteredArticles = JSON.parse(artikliNiz).filter((article) => {
+          article.tipArtikla = article.tipArtikla || '';
+          return (
+            article.ime.toLowerCase().includes(nameValue.toLowerCase()) &&
+            article.tipArtikla.toLowerCase().includes(typeValue.toLowerCase())
+          );
+        });
+
+        const newData =
+
+          .map((a) =>
+            cardHtml(
+              a.id,
+              a.slika,
+              a.ime,
+              a.cijena,
+              a.kolicina,
+              a.tipArtikla,
+              restoran
+            )
+          )
+          .join('');
+        articleGrid.html(newData);
+      });
+
+      searchTip.keyup(() => {
+        const nameValue = searchNaziv.val();
+        const typeValue = searchTip.val();
+        const filteredArticles = JSON.parse(artikliNiz).filter((article) => {
+          article.tipArtikla = article.tipArtikla || '';
+          return (
+            article.ime.toLowerCase().includes(nameValue.toLowerCase()) &&
+            article.tipArtikla.toLowerCase().includes(typeValue.toLowerCase())
+          );
+        });
+
+        const newData = filteredArticles
+          .map((a) =>
+            cardHtml(
+              a.id,
+              a.slika,
+              a.ime,
+              a.cijena,
+              a.kolicina,
+              a.tipArtikla,
+              restoran
+            )
+          )
+          .join('');
+        articleGrid.html(newData);
+      });
+
+      const cardHtml = (
+        id,
+        slika,
+        ime,
+        cijena,
+        kolicina,
+        tipArtikla,
+        restoran
+      ) => `
+      <div class="col-md">
+              <div class="grid-item">
+                <div class="card" style="max-width: 20rem">
+                  <img
+                    class="card-img-top"
+                    src="${slika}"
+                    alt="${ime}"
+                    style="height: 200px"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title">${ime}</h5>
+                    <p class="card-text">Cijena: ${cijena}</p>
+                    <p class="card-text">Kolicina: ${kolicina}</p>
+                    <p class="card-text">
+                      Tip: ${tipArtikla || 'Nije određen'}
+                    </p>
+                  </div>
+                  <div
+                    class="card-footer add-item"
+                    style="cursor: pointer"
+                    onclick='dodajArtikal("${id}", "${ime}", "${cijena}", "${restoran}")'
+                  >
+                    Dodaj
+                  </div>
+                </div>
+              </div>
+            </div>
+      `;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>O restoranu <%=nazivRestorana%></title>
+    <link rel='stylesheet' href='/stylesheets/liste.css' />
+    <link rel="icon" href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png">
+
+</head>
+<body>
+    <%-include partials/admin_rest_nav.ejs%>
+<div class="container">
+  <div class="jumbotron jumbotron-fluid bg-light">
+    <div class="container">
+      <h1 class="display-4">Restoran <strong><%=restoran[0].naziv%></strong></h1>
+      <p class="lead">Broj radnika: <%=restoran[0].broj_radnika%></p>
+      <p class="lead">Zvjezdica: <%=restoran[0].broj_zvjezdica%></p>
+      <p class="lead">Kapacitet: <%=restoran[0].kapacitet || 'Nije postavljen'%></p>
+      <p class="lead">Radno Vrijeme: Od <%=restoran[0].radno_vrijeme_od%>, Do <%=restoran[0].radno_vrijeme_do%></p>
+      <p class="lead">Telefon: <%=restoran[0].telefon%></p>
+      <p class="lead">Aktivan: <%=restoran[0].jeliaktivan ? 'Da' : 'Ne'%></p>
+    </div>
+  </div>
+  <div class="container bg-light p-4">
+    <h3>Izmjena informacija restorana:</h3>
+    <form action="/adm_rest/<%=nazivRestorana%>/restoran" method="post">
+      <div class="form-group">
+        <label for="telefonLabel">Telefon</label>
+        <input type="tel" class="form-control" id="telefonLabel" name="telefon" placeholder="Unesite novi broj telefona" value="<%=restoran[0].telefon%>">
+      </div>
+      <div class="form-group">
+        <label for="kapacitetLabel">Kapacitet</label>
+        <input type="number" class="form-control" id="kapacitetLabel" name="kapacitet" placeholder="Unesite kapacitet" value="<%=restoran[0].kapacitet%>">
+      </div>
+      <div class="form-group">
+        <label for="broj_zvjezdica_label">Broj zvjezdica</label>
+        <input type="number" class="form-control" id="broj_zvjezdica_label" name="broj_zvjezdica" placeholder="Unesite kapacitet" value="<%=restoran[0].broj_zvjezdica%>">
+      </div>     
+       <div class="form-group">
+        <label for="aktivanLabel">Aktivan?</label>
+        <select name="jeliaktivan" id="aktivanLabel">
+          <option value="true" selected="<%=restoran[0].jeliaktivan%> === 'Da'">Da</option>
+          <option value="false" selected="<%=restoran[0].jeliaktivan%> === 'Ne'">Ne</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</div>
+<%=console.log(JSON.stringify(restoran))%>;
+<script>
+</script>
+</body>
+</html>

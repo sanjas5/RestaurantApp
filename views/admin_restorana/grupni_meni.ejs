@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dostavljaci</title>
+    <link rel="stylesheet" href="/stylesheets/liste.css" />
+
+    <link
+      rel="icon"
+      href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png"
+    />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.10.2.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <%-include partials/admin_rest_nav.ejs%>
+    <div id="main">
+      <div class="container">
+        <h3 class="article-title">Trenutni Artikli:</h3>
+        <div class="row">
+          <%if (artikli.length > 0) {%> <%artikli.forEach(a => {%>
+          <div class="col-sm">
+            <div class="card m-2" style="width: 18rem">
+              <img
+                class="card-img-top"
+                src="<%=a.artikalSlika%>"
+                alt="<%=a.ime%>"
+              />
+              <div class="card-body">
+                <h5 class="card-title article-title"><%=a.artikalIme%></h5>
+                <p class="card-text"><b>Cijena:</b> <%=a.artikalCijena%> KM</p>
+                <p class="card-text"><b>Količina:</b> <%=a.artikalKolicina%></p>
+                <p class="card-text"><b>Meni:</b> <%=a.meniNaziv%></p>
+                <p class="card-text">
+                  <b>Tip artikla:</b> <%=a.artikalTip || 'Nije dodano' %>
+                </p>
+              </div>
+            </div>
+          </div>
+          <%})} else {%>
+          <div class="container">
+            <h5>Nema dodanih artikala...</h5>
+          </div>
+          <%}%>
+        </div>
+      </div>
+      <hr />
+      <div class="container" style="background: #f7f7f7">
+        <form action="/adm_rest/<%=nazivRestorana%>/meni" method="post">
+          <div class="form-group">
+            <h4 class="article-title">Dodaj novi meni:</h4>
+            <label for="meniName">Novi Meni</label>
+            <input
+              type="text"
+              class="form-control"
+              id="meniName"
+              name="naziv"
+              placeholder="Unesite naziv"
+            />
+            <br />
+            <input type="hidden" name="restoranId" value="<%=restoranId%>" />
+            <button type="submit" class="btn btn-default">Submit</button>
+          </div>
+        </form>
+        <form id="addMenuForm">
+          <br />
+          <h4 class="article-title">Dodaj artikal u meni</h4>
+          <br />
+          <div class="form-group">
+            <label for="tip">Meni:</label><br />
+            <select
+              name="meni"
+              class="form-select form-control form-select-lg mb-3"
+            >
+              <%meni.forEach(meniItem => {%>
+              <option value="<%=meniItem.id%>">
+                <%=meniItem.naziv.trim()%>
+              </option>
+              <%})%>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="artikal">Artikal:</label><br />
+            <select
+              name="artikal"
+              class="form-select form-control form-select-lg mb-3"
+            >
+              <%artikli.forEach(a => {%>
+              <option value="<%=a.artikalId%>">
+                <%=a.artikalIme.trim() + " | " + a.artikalCijena + " KM" %>
+              </option>
+              <%})%>
+            </select>
+          </div>
+          <input type="hidden" name="restoranId" value="<%=restoranId%>" />
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        <br />
+      </div>
+    </div>
+    <script>
+      $('#addMenuForm').submit(function (event) {
+        event.preventDefault();
+        const data = $('#addMenuForm').serializeArray();
+
+        $.ajax({
+          url: '/adm_rest/<%=nazivRestorana%>/meni',
+          type: 'put',
+          dataType: 'json',
+          data,
+          success: function (data) {
+            Swal.fire({
+              title: 'Artikal dodan u meni!',
+              text: 'Osvježite stranicu da dobijete nove podatke.',
+              icon: 'success',
+            });
+          },
+          error: function (data) {
+            Swal.fire({
+              title: 'Došlo je do greške!',
+              icon: 'error',
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

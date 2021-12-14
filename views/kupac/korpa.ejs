@@ -1,0 +1,259 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/stylesheets/korpa.css"/>
+  <link rel="icon" href="https://www.clipartmax.com/png/full/173-1730488_coffee-cup-clip-art-at-clker-com-vector-clip-art-online-coffee.png">
+
+  <title>Korpa</title>
+
+  <script
+  src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+  integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+  crossorigin="anonymous"
+></script>
+
+</head>
+<!--https://codepen.io/khurramalvi/pen/EKRQJZ-->
+<body>
+  <%-include partials/kupac_nav.ejs%>
+  <main>
+    <div class="basket">
+      <div class="basket-module">
+        <label for="promo-code">Unesite promo kod</label>
+        <input id="promo-code" type="text" name="promo-code" maxlength="5" class="promo-code-field">
+        <button class="promo-code-cta">Potvrdi</button>
+      </div>
+      <div class="basket-labels">
+        <ul>
+          <li class="item item-heading">Artikal</li>
+          <li class="price">Cijena</li>
+          <li class="quantity">Količina</li>
+          <li class="subtotal">Ukupno</li>
+        </ul>
+      </div>
+      <div id="korpa">
+      </div>
+     </div>
+      </div>
+    </div>
+    <aside>
+      <div class="summary">
+        <div class="summary-total-items"><span class="total-items"></span> Artikli u korpi</div>
+        <div class="summary-subtotal">
+          <div class="subtotal-title">Subtotal</div>
+          <div class="subtotal-value final-value" id="basket-subtotal">Prazno</div>
+          <div class="summary-promo hide">
+            <div class="promo-title">Promo</div>
+            <div class="promo-value final-value" id="basket-promo"></div>
+          </div>
+        </div>
+        <div class="summary-delivery">
+          <select name="delivery-collection" class="summary-delivery-selection" id="brzina" onchange="promijeniCijenu()">
+              <option value="0" selected="selected">Izaberite način dostave</option>
+             <option value="1">Brzo</option>
+             <option value="2">Regularno</option>
+             <option value="3">Sporo</option>
+          </select>
+        </div>
+        <div class="summary-total">
+          <div class="total-title">Total</div>
+          <div class="total-value final-value" id="basket-total">Prazno</div>
+        </div>
+        <div class="summary-checkout">
+          <button class="checkout-cta" id="checkout-btn" disabled >Odaberite način dostave</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+  <script>
+
+var promoCode;
+var promoPrice;
+var fadeTime = 300;
+let cijenaUkupno = 0;
+let regularno = 0;
+
+var socket = io();
+
+Storage.prototype.setObj = function(key, value) {
+      this.setItem(key, JSON.stringify(value));
+  }
+
+Storage.prototype.getObj = function(key) {
+      var value = this.getItem(key);
+      return value && JSON.parse(value);
+  }
+
+
+$(document).ready(function() {
+  if(localStorage.getObj('artikalProjekat')!==null){
+      const products=localStorage.getObj('artikalProjekat');
+      products.forEach((product) => {
+        let cijena = (product.price ? product.price : 0) * product.count;
+        cijenaUkupno += cijena;
+        input = `
+        <div class="basket-product">
+        <div class="item">
+          <div class="product-details">
+            <h1><strong><span class="item-quantity">${product.count}</span> x </strong> ${product.name}</h1>
+            <p>Product Code - ${Math.floor(Math.random() * 1000000 + 999999000)}</p>
+          </div>
+        </div>
+        <div class="price">${product.price || 0}</div>
+        <div class="quantity">
+          <input type="number" min="1" class="quantity-field" value="${product.count}">
+        </div>
+        <div class="subtotal">${cijena}</div>
+        <div class="remove" stlye="cursor:pointer;">
+          <button onclick="ukloniArtikal('${product.name}')">Ukloni</button>
+        </div>
+      </div>`
+
+      document.getElementById('korpa').insertAdjacentHTML('afterbegin', input);
+      })
+      $('#basket-total').text(`${cijenaUkupno}`);
+      $('#basket-subtotal').text(`${cijenaUkupno}`);
+    }
+});
+
+function promijeniCijenu() {
+  const e = document.getElementById("brzina");
+  if (regularno == 0) regularno = cijenaUkupno;
+  if (e.value == 1) {
+    cijenaUkupno = regularno +  regularno * 0.5;
+
+  } else if (e.value == 3) {
+    cijenaUkupno = regularno - regularno * 0.2;
+    $('#basket-total').text(`${cijenaUkupno}`);
+  } else if (e.value == 2) {
+    cijenaUkupno = regularno;
+  }
+  $('#basket-total').text(`${cijenaUkupno}`);
+  $('#checkout-btn').attr('disabled', false);
+  $('#checkout-btn').text(`KUPI`);
+
+}
+
+function kupiArtikle() {
+  const products=localStorage.getObj('artikalProjekat');
+  const brzinaDostave = document.getElementById("brzina").value;
+  const data = JSON.stringify({cijena: cijenaUkupno, brzinaDostave, artikli: products});
+  if (products.length > 0) {
+    $.ajax({
+      url : '/customer/korpa',
+      type: 'POST',
+      dataType: 'json',
+      data: data,
+      cache : false,
+      error: function() {
+        alert('Račun u vaše ime je već dodan.');
+      }
+  }).done(function(response) {
+    socket.emit('delivery done', { data });
+    localStorage.removeItem('artikalProjekat');
+    alert("Zahtjev poslan. Status: " + status || 'uspješno');
+    location.href = '/';
+    })
+  }
+}
+$("#checkout-btn").click(function(){
+  kupiArtikle();
+});
+
+function ukloniArtikal(name) {
+  products=localStorage.getObj('artikalProjekat');
+  const newProducts = products.filter(product => product.name !== name)
+  localStorage.setObj('artikalProjekat', newProducts);
+  location.reload();
+}
+
+$('.promo-code-cta').click(function() {
+
+  promoCode = $('#promo-code').val();
+
+  if (promoCode == '10off' || promoCode == '10OFF') {
+    //If promoPrice has no value, set it as 10 for the 10OFF promocode
+    if (!promoPrice) {
+      promoPrice = 10;
+    } else if (promoCode) {
+      promoPrice = promoPrice * 1;
+    }
+  } else if (promoCode != '') {
+    alert("Invalid Promo Code");
+    promoPrice = 0;
+  }
+  //If there is a promoPrice that has been set (it means there is a valid promoCode input) show promo
+  if (promoPrice) {
+    $('.summary-promo').removeClass('hide');
+    $('.promo-value').text(promoPrice.toFixed(2));
+    recalculateCart(true);
+  }
+});
+
+/* Recalculate cart */
+function recalculateCart(onlyTotal) {
+  var subtotal = 0;
+
+  /* Sum up row totals */
+  $('.basket-product').each(function() {
+    subtotal += parseFloat($(this).children('.subtotal').text());
+  });
+
+  /* Calculate totals */
+  var total = subtotal;
+
+  //If there is a valid promoCode, and subtotal < 10 subtract from total
+  var promoPrice = parseFloat($('.promo-value').text());
+  if (promoPrice) {
+    if (subtotal >= 10) {
+      total -= promoPrice;
+    } else {
+      alert('Narudžba mora biti veća od 10KM da bi se PROMO KOD iskoristio !!');
+      $('.summary-promo').addClass('hide');
+    }
+  }
+
+  /*If switch for update only total, update only total display*/
+  if (onlyTotal) {
+    /* Update total display */
+    $('.total-value').fadeOut(fadeTime, function() {
+      $('#basket-total').html(total.toFixed(2));
+      $('.total-value').fadeIn(fadeTime);
+    });
+  } else {
+    /* Update summary display. */
+    $('.final-value').fadeOut(fadeTime, function() {
+      $('#basket-subtotal').html(subtotal.toFixed(2));
+      $('#basket-total').html(total.toFixed(2));
+      if (total == 0) {
+        $('.checkout-cta').fadeOut(fadeTime);
+      } else {
+        $('.checkout-cta').fadeIn(fadeTime);
+      }
+      $('.final-value').fadeIn(fadeTime);
+    });
+  }
+}
+
+
+/* Remove item from cart */
+function removeItem(removeButton) {
+  /* Remove row from DOM and recalc cart total */
+  var productRow = $(removeButton).parent().parent();
+  productRow.slideUp(fadeTime, function() {
+    productRow.remove();
+    recalculateCart();
+    updateSumItems();
+  });
+}
+  </script>
+</body>
+
+</html>

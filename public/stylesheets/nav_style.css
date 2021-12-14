@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+.admin-panel-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f2bbae;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 30px;
+  height: 60px;
+}
+
+.nav-item {
+  outline: none;
+  padding: 10px 0;
+  border: none;
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.1em;
+  font-family: 'Roboto', serif;
+  text-transform: uppercase;
+}
+.nav-item:hover {
+  text-decoration: none;
+  color: grey;
+  text-shadow: 1px 1px 3px lightsalmon;
+  transition: 0.3s all ease;
+}
+
+.welcome-message {
+  font-family: 'Roboto', serif;
+  /*font-size: 14px;
+  color: rgb(174, 89, 53);
+  font-weight: bold;
+  padding: 10px 0;*/
+  background: rgba(174, 89, 53, 0.8);
+  min-width: 140px;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  font-family: 'Cookie', cursive;
+  position: relative;
+  transition: 1s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-left: 10px;
+  height: 50px;
+}
+
+a{
+  margin-left: 10px;
+}
+
+img{
+  height: 50px;
+  width: 120px;
+}

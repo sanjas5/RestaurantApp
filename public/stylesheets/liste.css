@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Prata&display=swap');
+body {
+  background: url('../images/background.jpg');
+  background-size: cover;
+  font-family: 'Prata', serif;
+}
+
+.card-img-top {
+  height: 250px;
+  object-fit: contain;
+}
+
+.article-title {
+  text-align: center;
+  border-bottom: 2px solid lightcoral;
+  padding-bottom: 2rem;
+}
+
+#main {
+  padding: 20px;
+  background-color: white;
+  width: 80vw;
+  margin-left: 10vw;
+}
+
+form {
+  margin-top: 100px;
+}
+button {
+  /*background-image: linear-gradient(
+    to bottom right,
+    rgb(174, 89, 53),
+    rgba(174, 89, 53, 0.5)
+    rgb(136, 83, 9)
+  );*/
+  background-color: rgb(174, 89, 53);
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  padding: 10px;
+  height: 50px;
+  width: auto;
+}
+
+label {
+  color: rgb(62, 64, 59);
+  font-weight: 500;
+  font-size: 20px;
+}
+
+input {
+  background-color: transparent;
+  color: rgb(93, 94, 92);
+  font-weight: 300;
+  font-size: 18px;
+  border: none;
+  border-bottom: 1px solid rgb(62, 64, 59);
+  margin-bottom: 30px;
+}
